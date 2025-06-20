@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PaymentSubscribeRequest;
 use App\Models\Payment;
+use App\Models\Sub;
 use App\Models\TelegramUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -10,22 +12,13 @@ use YooKassa\Client;
 
 class PaymentController extends Controller
 {
-    public function subscribe (Request $request) {
+    public function subscribe (PaymentSubscribeRequest $request) {
         if (!$request->has("subscription")) abort(422);
 
         $user = TelegramUser::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail()->user;
-        if ($user->subscription >= $request->subscription) abort (409);
 
-        Payment::where("user_id", $user->id)->where('status', 0)->delete();
+        $sub = Sub::where("type", "sub")->where("name", $request["subscription"])->firstOrFail();
 
-        if (!$request->has("subscription")) abort (422, "Не хватает поля subscription");
-        $subscription = $request->subscription;
-
-        $subs = [
-            1 => 1000,
-            2 => 2000,
-            3 => 4000
-        ];
 
         $client = new Client();
         $client->setAuth(env("SHOP_ID"), env("YOOKASSA_API_KEY"));

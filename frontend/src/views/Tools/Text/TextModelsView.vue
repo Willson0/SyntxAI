@@ -1,9 +1,16 @@
 <script>
 import TextModelsNavigationComponents from "@/components/TextModelsNavigationComponents.vue";
+import config from "@/config.json";
+import axios from "axios";
 
 export default {
     name: "TextModelsView",
     components: {TextModelsNavigationComponents},
+    data () {
+        return {
+            config: config,
+        }
+    },
     created () {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
@@ -22,7 +29,22 @@ export default {
     methods: {
         saveAndGo () {
             window.Telegram.WebApp.close();
+        },
+        async sendData() {
+            await axios.post(config.backend + "auth/settings", {
+                initData: window.Telegram.WebApp.initData,
+                model: this.user.model,
+            }).then((response) => {
+                this.$store.dispatch("updateUser", response.data);
+            }).catch((error) => {
+                alert("Ошибка:\n" + error.response.data.message);
+            });
         }
+    },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
     }
 }
 </script>
@@ -39,17 +61,16 @@ export default {
                 <div>
                     <span class="stat-icon"><i class="bi bi-star-fill"></i></span>
                     <span class="stat-text">Тарифный план</span>
-                    <span class="stat-number">
-                    💼 FREE                </span>
+                    <span class="stat-number">{{ user.sub_name }}</span>
                 </div>
             </div>
-            <div class="stat-item">
-                <div>
-                    <span class="stat-icon"><i class="bi bi-person-workspace"></i></span>
-                    <span class="stat-text">Доступно пробных запроса</span>
-                    <span class="stat-number">5 ✏️</span>
-                </div>
-            </div>
+<!--            <div class="stat-item">-->
+<!--                <div>-->
+<!--                    <span class="stat-icon"><i class="bi bi-person-workspace"></i></span>-->
+<!--                    <span class="stat-text">Доступно пробных запроса</span>-->
+<!--                    <span class="stat-number">5 ✏️</span>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
     </section>
 
@@ -62,42 +83,8 @@ export default {
                     <label for="model">
                         Модель                </label>
                     <div class="select-wrapper">
-                        <select id="model" name="model" class="select-input" onchange="loadVersions(this.value)">
-                            <option value="2"  disabled>🚧 GPT-o3 PRO</option>
-                            <option value="5"  >GPT-o1</option>
-                            <option value="6" selected >GPT-o1 Mini</option>
-                            <option value="7"  >🏆 GPT-o3</option>
-                            <option value="8"  >GPT-o3 Mini High</option>
-                            <option value="9"  >♾️ GPT-o3 Mini</option>
-                            <option value="10"  >🔥 GPT-o4 Mini</option>
-                            <option value="13"  >🔥 GPT-4.1</option>
-                            <option value="14"  >♾️ GPT-4.1 Mini</option>
-                            <option value="15"  >♾️ GPT-4.1 Nano</option>
-                            <option value="16"  >GPT-4.5</option>
-                            <option value="21"  >👨‍🎨 GPT-4o-Images</option>
-                            <option value="22"  >🏆 GPT-4o +Internet +File</option>
-                            <option value="23"  >GPT-4o</option>
-                            <option value="24"  >♾️ GPT-4o Mini</option>
-                            <option value="25"  >GPT-4 Turbo</option>
-                            <option value="30"  >🔥 DeepSeek R1</option>
-                            <option value="31"  >DeepSeek V3</option>
-                            <option value="33"  >🏆 Gemini 2.5 Pro NEW</option>
-                            <option value="34"  >♾️ Gemini 2.5 Flash</option>
-                            <option value="35"  >🏆 Qwen 3</option>
-                            <option value="36"  >Qwen 3 Thinking</option>
-                            <option value="39"  >🏆 Claude 4 Sonnet</option>
-                            <option value="40"  >Claude 3.7 Sonnet</option>
-                            <option value="41"  >Claude 3.7 Sonnet Extended</option>
-                            <option value="42"  >Claude 3.5 Sonnet New</option>
-                            <option value="44"  >♾️ Claude 3.5 Haiku</option>
-                            <option value="46"  >Claude 3 Opus</option>
-                            <option value="60"  >🏆 Grok 3</option>
-                            <option value="61"  >Grok 3 Reasoner</option>
-                            <option value="62"  >Grok 3 Deep Search</option>
-                            <option value="63"  >Grok 3 Images Generation (BETA)</option>
-                            <option value="98"  >🔥 Perplexity Sonar Pro + Internet</option>
-                            <option value="99"  >Perplexity Sonar Deep Research</option>
-                            <option value="100"  >♾️ Perplexity Sonar + Internet</option>
+                        <select id="model" name="model" class="select-input" v-model="user.model" @change="sendData">
+                            <option :value="key" v-for="(value, key) in config.models">{{ value }}</option>
                         </select>
                         <i class="bi bi-chevron-down select-arrow"></i>
                     </div>

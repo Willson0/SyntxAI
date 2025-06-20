@@ -2,6 +2,7 @@
 import CarouselComponent from "@/components/CarouselComponent.vue";
 import NavigationComponent from "@/components/NavigationComponent.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import config from "@/config.json";
 
 export default {
     name: "ProfileView",
@@ -9,6 +10,7 @@ export default {
     data() {
         return {
             menuClicked: false,
+            config: config,
             steps: [100,280,500,750,1000,1500,2000,2500,5000],
             prices: {
                 "100": {"EUR":3.6,"RUB":360,"USD":3.87,"STARS":230},
@@ -88,7 +90,7 @@ export default {
         },
         changeTariff(tariffId) {
             document.querySelectorAll('.tariff-block').forEach(el => el.classList.remove('active'));
-            document.getElementById(tariffId).classList.add('active');
+            // document.getElementById(tariffId).classList.add('active');
             document.querySelectorAll('ul.pricingchoose li').forEach(el => el.classList.remove('active'));
             document.querySelector(`ul.pricingchoose li[onclick="changeTariff('${tariffId}')"]`)?.classList.add('active');
             history.pushState(null, null, '#' + tariffId);
@@ -162,12 +164,12 @@ export default {
                 loadingScreen.classList.remove('fadeOut');
             });
         });
-        window.addEventListener('load', () => {
-            loadingScreen.classList.add('fadeOut');
-            loadingScreen.addEventListener('animationend', () => {
-                loadingScreen.style.display = 'none';
-            });
-        });
+        // window.addEventListener('load', () => {
+        //     // loadingScreen.classList.add('fadeOut');
+        //     loadingScreen.addEventListener('animationend', () => {
+        //         loadingScreen.style.display = 'none';
+        //     });
+        // });
         document.querySelectorAll('span.promocode').forEach(span => {
             span.style.cursor = "pointer";
             span.addEventListener('click', async () => {
@@ -183,16 +185,21 @@ export default {
             });
         });
 
-        const slider = document.getElementById("myRange");
-        slider.min = 0;
-        slider.max = this.steps.length - 1;
-        const initialIndex = this.steps.indexOf(500);
-        slider.value = initialIndex >= 0 ? initialIndex : 0;
-        this.updateSliderValues(slider, this.steps, this.prices);
-        slider.addEventListener('input', () => this.updateSliderValues(slider, this.steps, this.prices));
+        // const slider = document.getElementById("myRange");
+        // slider.min = 0;
+        // slider.max = this.steps.length - 1;
+        // const initialIndex = this.steps.indexOf(500);
+        // slider.value = initialIndex >= 0 ? initialIndex : 0;
+        // this.updateSliderValues(slider, this.steps, this.prices);
+        // slider.addEventListener('input', () => this.updateSliderValues(slider, this.steps, this.prices));
     },
     beforeUnmount() {
         document.removeEventListener('click', this.closeMenu);
+    },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
     }
 }
 </script>
@@ -208,21 +215,21 @@ export default {
             </div>
             <div class="buttonSection">
                 <div class="button">
-                    <a href="https://t.me/syntxaicommunity">
+                    <a target="_blank" :href="config.telegram">
                         помощь<br />поддержка<br />общение		            <div class="button-icon">
                         <span class="telegram-icon"><i class="bi bi-telegram"></i></span>
                     </div>
                     </a>
                 </div>
                 <div class="button">
-                    <a href="https://t.me/syntxfamily">
+                    <a target="_blank" :href="config.telegram_group">
                         гайды<br />инсайды<br />новости		            <div class="button-icon">
                         <i class="bi bi-substack"></i>
                     </div>
                     </a>
                 </div>
                 <div class="button">
-                    <a href="https://www.instagram.com/ru.syntx.ai">
+                    <a target="_blank" :href="config.instagram">
                         тренды<br />лайфхаки<br />новинки		            <div class="button-icon">
                         <i class="bi bi-instagram"></i>
                     </div>
@@ -231,14 +238,14 @@ export default {
             </div>
             <div class="bottomButton">
                 <div class="videoBtnText" id="youtubeBtn">
-                    <a href="https://www.youtube.com/@syntxai">
+                    <a target="_blank" :href="config.youtube">
                         МЫ В YOUTUBE		            <div class="button-icon">
                         <i class="bi bi-youtube"></i>
                     </div>
                     </a>
                 </div>
                 <div class="videoBtnText hidden" id="vkBtn">
-                    <a href="https://vk.com/syntxaichatbot">
+                    <a target="_blank" :href="config.vk">
                         МЫ ВКОНТАКТЕ		            <div class="button-icon">
                         <i class="fab fa-vk"></i>
                     </div>
@@ -249,8 +256,6 @@ export default {
     </div>
 
     <div class="bottom"></div>
-    <div class="bottom-info">
-        Время сервера: 15.06.2025 21:37 | ID: 1337592809    </div>
     <NavigationComponent />
 
 </template>

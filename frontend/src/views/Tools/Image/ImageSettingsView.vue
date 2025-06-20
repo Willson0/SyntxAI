@@ -1,4 +1,6 @@
 <script>
+import config from "@/config.json";
+import axios from "axios";
 export default {
     name: "ImageSettingsView",
     data () {
@@ -81,14 +83,18 @@ export default {
         
         
         Telegram.WebApp.MainButton.setParams({
-            text: 'Скопировать и закрыть'
+            text: 'Сохранить и закрыть'
         });
         Telegram.WebApp.MainButton.onClick(() => {
-            const prompt = resultToText();
-            this.copyToClipboard(prompt);
-            Telegram.WebApp.showAlert(`Результат скопирован в буфер обмена\n\nЕсли результат не скопирован, скопируйте его вручную использую кнопку Показать промпт`, () => {
+            const prompt = this.resultToText();
+            axios.post(config.backend + "auth/settings", {
+                initData: window.Telegram.WebApp.initData,
+                midjourney_promt: prompt,
+            }).then((response) => {
                 Telegram.WebApp.close();
-            })
+            }).catch((error) => {
+                alert("Ошибка:\n" + error.response.data.message);
+            });
         });
         Telegram.WebApp.MainButton.show();
     },
@@ -490,6 +496,11 @@ export default {
                 document.getElementById('ow_input').disabled = false;
             }
         }
+    },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
     }
 }
 </script>
@@ -694,7 +705,7 @@ export default {
 
             <button type="button" class="button-primary" @click="resetResult()">Сбросить параметры</button>
             <button id="prompt-result-btn" type="button" class="button-primary" @click="showPromptResult()">Показать промпт</button>
-            <textarea id="prompt-result" name="prompt-result" class="full-width-input" rows="3" style="resize: vertical; min-height: 50px; display: none" readonly @click="this.select()"></textarea>
+            <textarea id="prompt-result" name="prompt-result" class="full-width-input" rows="3" style="resize: vertical; min-height: 50px; display: none" readonly onclick="this.select()"></textarea>
         </div>
     </section>
 </template>

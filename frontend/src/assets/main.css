@@ -2013,7 +2013,23 @@ input:checked + .slider::after {
 /*    animation-delay: 0.05s; !* slight delay for staggered effect *!*/
 /*}*/
 
+.sIcon {
+    width: 23px;
+    height: 23px;
+    border: 2px solid #727272;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 400;
+    color: #727272;
+}
 
+.sIcon.info::before {
+    content: 'i';
+}
 
 
 

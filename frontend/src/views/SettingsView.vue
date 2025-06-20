@@ -1,10 +1,16 @@
 <script>
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import NavigationComponent from "@/components/NavigationComponent.vue";
+import config from "@/config.json";
+import axios from "axios";
 
 export default {
     name: "SettingsView",
     components: {NavigationComponent, HeaderComponent},
+    data () {
+        return {
+        }
+    },
     mounted () {
         const form = document.getElementById('settingsForm');
         const checkboxes = form.querySelectorAll('input[type="checkbox"]');
@@ -34,6 +40,26 @@ export default {
                     });
             });
         });
+    },
+    methods: {
+        async sendData() {
+            await axios.post(config.backend + "auth/settings", {
+                initData: window.Telegram.WebApp.initData,
+                notify_tokens: this.user.notify_tokens,
+                notify_refs: this.user.notify_refs,
+                notify_refs_buys: this.user.notify_refs_buys,
+                notify_about_updates: this.user.notify_about_updates,
+            }).then((response) => {
+                this.$store.dispatch("updateUser", response.data);
+            }).catch((error) => {
+                alert("Ошибка:\n" + error.response.data.message);
+            });
+        }
+    },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
     }
 }
 </script>
@@ -47,7 +73,8 @@ export default {
             <span class="switch-label">Получать уведомления об обновлениях</span>
             <label class="switch">
                 <input type="hidden" name="notifications" value="0">
-                <input type="checkbox" id="notifications" name="notifications" value="1" checked>
+                {{user.notify_about_updates}}
+                <input @input="user.notify_about_updates = !Boolean(user.notify_about_updates); sendData()" :checked="user.notify_about_updates" type="checkbox" id="notifications" name="notifications">
                 <span class="slider"></span>
             </label>
         </section>
@@ -57,7 +84,7 @@ export default {
             <span class="switch-label">Уведомлять о списании токенов</span>
             <label class="switch">
                 <input type="hidden" name="tokensInfo" value="0">
-                <input type="checkbox" id="tokensInfo" name="tokensInfo" value="1" checked>
+                <input @input="user.notify_tokens = !Boolean(user.notify_tokens); sendData()" :checked="user.notify_tokens" type="checkbox" id="tokensInfo" name="tokensInfo" value="1" checked>
                 <span class="slider"></span>
             </label>
         </section>
@@ -67,7 +94,7 @@ export default {
             <span class="switch-label">Новые рефералы</span>
             <label class="switch">
                 <input type="hidden" name="notifications_newAffs" value="0">
-                <input type="checkbox" id="notifications_newAffs" name="notifications_newAffs" value="1" checked>
+                <input @input="user.notify_refs = !Boolean(user.notify_refs); sendData()" :checked="user.notify_refs" type="checkbox" id="notifications_newAffs" name="notifications_newAffs" value="1" checked>
                 <span class="slider"></span>
             </label>
         </section>
@@ -77,7 +104,7 @@ export default {
             <span class="switch-label">Оплаты рефералами</span>
             <label class="switch">
                 <input type="hidden" name="notifications_AffsPays" value="0">
-                <input type="checkbox" id="notifications_AffsPays" name="notifications_AffsPays" value="1" checked>
+                <input @input="user.notify_refs_buys = !Boolean(user.notify_refs_buys); sendData()" :checked="user.notify_refs_buys" type="checkbox" id="notifications_AffsPays" name="notifications_AffsPays" value="1" checked>
                 <span class="slider"></span>
             </label>
         </section>
@@ -86,10 +113,6 @@ export default {
     </form>
 
     <div class="bottom"></div>
-
-
-    <div class="bottom-info">
-        Время сервера: 18.06.2025 22:13 | ID: 1337592809    </div>
     <NavigationComponent />
 </template>
 

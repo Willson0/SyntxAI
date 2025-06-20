@@ -1,6 +1,8 @@
 <script>
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import NavigationComponent from "@/components/NavigationComponent.vue";
+import config from "@/config.json";
+import axios from "axios";
 
 export default {
   name: "SubscriptionsView",
@@ -29,10 +31,15 @@ export default {
                 2000: { EUR: 46, RUB: 4600, USD: 49.41, STARS: 2940 },
                 2500: { EUR: 54, RUB: 5400, USD: 58, STARS: 3450 },
                 5000: { EUR: 99, RUB: 9900, USD: 106.34, STARS: 6325 }
-            }
+            },
+            subscriptions: [],
         };
     },
-    mounted() {
+    async mounted() {
+        await axios.get(config.backend + "subscription").then((response) => {
+            this.subscriptions = response.data;
+        })
+
         this.setupStyles();
         this.cards = document.querySelectorAll(".pricing-card");
         this.setupCardsSlider();
@@ -41,6 +48,7 @@ export default {
         document.addEventListener("click", this.closeMenu);
         this.initializeSlider();
         this.initializePromo();
+        this.setupTokenSwitcher();
 
         window.onclick = function(event) {
             const modal = document.getElementById('planModal');
@@ -245,6 +253,135 @@ export default {
             });
 
             updateCardsSlider();
+        },
+        setupTokenSwitcher () {
+            const cards = document.querySelectorAll('.pricing-card');
+            cards.forEach((card) => {
+                const tokenSwitcher = card.querySelector('.token-switcher');
+                const tokenSlider = card.querySelector('.token-slider');
+                const cardPrice = card.querySelector('.cardPrice');
+                const cardButton = card.querySelector('.cardButton');
+                let isTokenRight = true; // Начальное положение - справа (tokens2)
+
+                function toggleTokenSlider() {
+                    isTokenRight = !isTokenRight;
+                    tokenSlider.style.transition = 'transform 0.3s ease';
+                    tokenSlider.style.transform = isTokenRight ? 'translateX(0)' : 'translateX(-100%)';
+                    updatePrice();
+                    updateButtonUrl();
+                    animatePrice();
+                }
+
+                function updatePrice() {
+                    if (cardPrice) {
+                        const price1 = cardPrice.querySelector('.price1');
+                        const price2 = cardPrice.querySelector('.price2');
+                        if (price1 && price2) {
+                            price1.style.display = isTokenRight ? 'none' : 'inline';
+                            price2.style.display = isTokenRight ? 'inline' : 'none';
+                        }
+                    }
+                }
+
+                function updateButtonUrl() {
+                    if (cardButton) {
+                        const currentUrl = new URL(cardButton.href);
+                        const tokens1 = cardButton.getAttribute('data-tokens1');
+                        const tokens2 = cardButton.getAttribute('data-tokens2');
+                        currentUrl.searchParams.set('tokens', isTokenRight ? tokens2 : tokens1);
+                        cardButton.href = currentUrl.toString();
+                    }
+                }
+
+                function animatePrice() {
+                    if (cardPrice) {
+                        cardPrice.classList.remove('price-zooming');
+                        // Принудительный reflow
+                        void cardPrice.offsetWidth;
+                        cardPrice.classList.add('price-zooming');
+                    }
+                }
+
+                let startX, moveX;
+                let isDragging = false;
+                let clickStartTime;
+                let startPosition;
+
+                function handleTokenStart(e) {
+                    if (!tokenSwitcher) return;
+                    e.preventDefault();
+                    startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+                    isDragging = true;
+                    clickStartTime = new Date().getTime();
+                    tokenSlider.style.transition = 'none';
+                    startPosition = isTokenRight ? 0 : -100;
+                }
+
+                function handleTokenMove(e) {
+                    if (!isDragging || !tokenSwitcher) return;
+                    e.preventDefault();
+                    moveX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+                    const diff = moveX - startX;
+                    const percentage = Math.max(-100, Math.min(0, startPosition + (diff / tokenSwitcher.offsetWidth * 100)));
+                    tokenSlider.style.transform = `translateX(${percentage}%)`;
+                }
+
+                function handleTokenEnd(e) {
+                    if (!isDragging || !tokenSwitcher) return;
+                    isDragging = false;
+                    const endX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+                    const diff = endX - startX;
+                    const clickEndTime = new Date().getTime();
+                    const clickDuration = clickEndTime - clickStartTime;
+
+                    if (Math.abs(diff) < 5 && clickDuration < 200) {
+                        // Это был клик, просто переключаем состояние
+                        toggleTokenSlider();
+                    } else {
+                        // Это был свайп, определяем направление
+                        const threshold = tokenSwitcher.offsetWidth * 0.1; // 10% порог для свайпа
+                        if (Math.abs(diff) > threshold) {
+                            isTokenRight = diff > 0;
+                        }
+                        tokenSlider.style.transition = 'transform 0.3s ease';
+                        tokenSlider.style.transform = isTokenRight ? 'translateX(0)' : 'translateX(-100%)';
+                        updatePrice();
+                        updateButtonUrl();
+                        animatePrice();
+                    }
+                }
+
+                if (tokenSwitcher) {
+                    tokenSwitcher.addEventListener('mousedown', handleTokenStart);
+                    tokenSwitcher.addEventListener('touchstart', handleTokenStart);
+                    document.addEventListener('mousemove', handleTokenMove);
+                    document.addEventListener('touchmove', handleTokenMove);
+                    document.addEventListener('mouseup', handleTokenEnd);
+                    document.addEventListener('touchend', handleTokenEnd);
+
+                    // Устанавливаем начальное положение слайдера
+                    tokenSlider.style.transform = 'translateX(0)';
+
+                    function hintAnimation() {
+                        tokenSlider.style.transition = 'transform 0.15s ease-in-out';
+                        tokenSlider.style.transform = 'translateX(-20%)';
+
+                        setTimeout(() => {
+                            tokenSlider.style.transform = 'translateX(0)';
+                            tokenSlider.style.transition = 'transform 0.3s ease-out';
+                        }, 150);
+                    }
+
+                    setTimeout(() => {
+                        hintAnimation();
+                        setTimeout(hintAnimation, 300);
+                    }, 2000);
+                }
+
+                // Устанавливаем начальное отображение цены и URL кнопки
+                updatePrice();
+                updateButtonUrl();
+            });
         },
         setupTooltip() {
             const tooltipContainer = document.getElementById("tooltip-container");
@@ -4017,10 +4154,6 @@ export default {
   </div>
 
   <div class="bottom"></div>
-
-  <div class="bottom-info">
-    Время сервера: 15.06.2025 23:38 | ID: 1337592809
-  </div>
   <NavigationComponent />
 </template>
 

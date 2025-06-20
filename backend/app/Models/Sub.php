@@ -8,4 +8,6 @@ class Sub extends Model
 {
     protected $table = "subs";
     protected $guarded = false;
+    public $timestamps = false;
+
 }

@@ -1,9 +1,16 @@
 <script>
 import TextModelsNavigationComponents from "@/components/TextModelsNavigationComponents.vue";
+import axios from "axios";
+import config from "@/config.json";
 
 export default {
     name: "TextSettingsView",
     components: {TextModelsNavigationComponents},
+    data () {
+        return {
+            config: config,
+        }
+    },
     created () {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
@@ -146,6 +153,33 @@ export default {
             document.body.appendChild(form);
             form.submit();
         },
+        async sendData () {
+            await axios.post(config.backend + "auth/settings", {
+                initData: window.Telegram.WebApp.initData,
+                audio_answer: this.user.audio_answer,
+                audio_voice: this.user.audio_voice,
+                need_model_name: this.user.need_model_name,
+                instructions: this.user.instructions
+            }).then((response) => {
+                this.$store.dispatch("updateUser", response.data);
+
+                let button = document.querySelector("#save_button");
+                button.textContent = "Успешно сохранено!";
+                button.style.backgroundColor = "#4caf50";
+
+                setTimeout(() => {
+                    button.textContent = "Сохранить";
+                    button.style.backgroundColor = "";
+                }, 4000);
+            }).catch((error) => {
+                alert("Ошибка:\n" + error.response.data.message);
+            });
+        }
+    },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
     }
 }
 </script>
@@ -168,11 +202,11 @@ export default {
                         Аудио ответы:
                     </label>
                     <div class="select-wrapper">
-                        <select name="audioAnswers" class="select-input" onchange="this.form.submit()">
-                            <option value="0" >Выключить</option>
-                            <option value="1" >На любой запрос</option>
-                            <option value="2" >Только на текст</option>
-                            <option value="3" selected>Только на голос</option>
+                        <select name="audioAnswers" class="select-input" @change="sendData" v-model="user.audio_answer">
+                            <option value="no" >Выключить</option>
+                            <option value="all" >На любой запрос</option>
+                            <option value="text" >Только на текст</option>
+                            <option value="audio">Только на голос</option>
                         </select>
                         <i class="bi bi-chevron-down select-arrow"></i>
                     </div>
@@ -186,13 +220,8 @@ export default {
                         Выбор голоса:
                     </label>
                     <div class="select-wrapper">
-                        <select name="voiceChoice" class="select-input" onchange="this.form.submit()">
-                            <option value="syntx" selected>Syntx (F)</option>
-                            <option value="shimmer" >Shimmer (F)</option>
-                            <option value="echo" >Echo (M)</option>
-                            <option value="onyx" >Onyx (M)</option>
-                            <option value="fable" >Fable (M)</option>
-                            <option value="alloy" >Alloy (N)</option>
+                        <select name="voiceChoice" class="select-input" v-model="user.audio_voice" @change="sendData">
+                            <option :value="key" selected v-for="(value, key) in config.voices">{{ value }}</option>
                         </select>
                         <i class="bi bi-chevron-down select-arrow"></i>
                     </div>
@@ -205,7 +234,7 @@ export default {
             <span class="switch-label">Выводить название модели:</span>
             <label class="switch">
                 <input type="checkbox" id="showModel" name="showModel" value="1"
-                       checked   onchange="updateShowModel(this)">
+                       :checked="user.need_model_name" @change="user.need_model_name = !Boolean(user.need_model_name); sendData()">
                 <span class="slider"></span>
             </label>
         </section>
@@ -216,11 +245,11 @@ export default {
         <!-- Переключатель для summary_status -->
         <section class="margin" style="display: flex; justify-content: space-between; align-items: center; margin: 20px 20px 0px 20px;">
             <span class="switch-label">Индивидуальные указания:</span>
-            <label class="switch">
-                <input type="checkbox" id="summary_status" name="summary_status" value="1"
-                       checked   onchange="updateSummaryStatus(this)">
-                <span class="slider"></span>
-            </label>
+<!--            <label class="switch">-->
+<!--                <input type="checkbox" id="summary_status" name="summary_status" value="1"-->
+<!--                       checked   onchange="updateSummaryStatus(this)">-->
+<!--                <span class="slider"></span>-->
+<!--            </label>-->
         </section>
 
     </form>
@@ -237,10 +266,10 @@ export default {
         <form class="settings-form" method="post" action="">
             <input type="hidden" name="form_id" value="summary_form">
             <div class="form-group" style="position: relative;">
-                <textarea id="summary" name="summary" maxlength="3000" rows="5" placeholder="Пользовательские инструкции позволяют указать все, что вы хотели бы, чтобы ChatGPT учел в своем ответе. Введите пожелания и ваши установки будут добавляться в новые разговоры в дальнейшем." style=""></textarea>
+                <textarea v-model="user.instructions" id="summary" name="summary" maxlength="3000" rows="5" placeholder="Пользовательские инструкции позволяют указать все, что вы хотели бы, чтобы ChatGPT учел в своем ответе. Введите пожелания и ваши установки будут добавляться в новые разговоры в дальнейшем." style=""></textarea>
                 <div id="char_count" style="position: absolute; right: 10px; bottom: 10px; color: grey;">0/3000</div>
             </div>
-            <button type="submit">Сохранить</button>
+            <button type="button" id="save_button" style="transition: 0.4s;" @click="sendData">Сохранить</button>
             <button type="button" @click="saveAndGo">Закрыть окно</button>
         </form>
     </section>

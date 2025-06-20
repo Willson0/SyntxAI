@@ -8,4 +8,6 @@ class Models extends Model
 {
     protected $table = "models";
     protected $guarded = false;
+    public $timestamps = false;
+
 }

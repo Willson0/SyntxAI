@@ -153,10 +153,6 @@ export default {
     </form>
 
     <div class="bottom"></div>
-
-
-    <div class="bottom-info">
-        Время сервера: 18.06.2025 22:26 | ID: 1337592809    </div>
     <NavigationComponent />
 </template>
 

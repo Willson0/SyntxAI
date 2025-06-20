@@ -25,195 +25,11 @@ export default {
         }
     },
     mounted() {
-        this.initLoadingScreen();
-        this.initializeSubMenus();
-        this.initializeActiveTariff();
-        this.initSlider();
-        this.initPromocodeCopy();
-        document.addEventListener('click', this.closeMenu);
     },
     beforeUnmount() {
         document.removeEventListener('click', this.closeMenu);
     },
     methods: {
-        toggleMoreMenu() {
-            this.menuClicked = true;
-            const dropdownMenu = this.$el.querySelector('.dropdownMenu');
-            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-        },
-        closeMenu(event) {
-            const dropdownMenu = document.querySelector('.dropdownMenu');
-            if (!this.menuClicked && !dropdownMenu.contains(event.target)) {
-                dropdownMenu.style.display = 'none';
-            }
-            this.menuClicked = false;
-        },
-        updateURLWithSubmenu(submenuId, isOpen) {
-            let hash = window.location.hash.substring(1);
-            let ids = hash ? hash.split(',') : [];
-
-            if (isOpen && !ids.includes(submenuId)) {
-                ids.push(submenuId);
-            } else if (!isOpen) {
-                ids = ids.filter(id => id !== submenuId);
-            }
-
-            window.location.hash = ids.join(',');
-        },
-        initializeSubMenus() {
-            const subMenus = document.getElementsByClassName('submenu');
-            const idsToShow = window.location.hash.substring(1).split(',');
-
-            Array.from(subMenus).forEach(menu => {
-                const id = menu.id;
-                const statItem = document.querySelector(`[data-submenu-id="${id}"]`);
-                const icon = statItem?.querySelector('.stat-text i');
-
-                if (idsToShow.includes(id)) {
-                    menu.classList.add('show');
-                    icon?.classList.replace('bi-caret-right-fill', 'bi-caret-down-fill');
-                } else {
-                    menu.classList.remove('show');
-                    icon?.classList.replace('bi-caret-down-fill', 'bi-caret-right-fill');
-                }
-            });
-        },
-        toggleSubMenu(submenuId, element) {
-            const submenu = document.getElementById(submenuId);
-            const icon = element.querySelector('.stat-text i');
-            const isOpen = submenu.classList.contains('show');
-
-            submenu.classList.toggle('show');
-            icon.classList.toggle('bi-caret-down-fill', !isOpen);
-            icon.classList.toggle('bi-caret-right-fill', isOpen);
-            this.updateURLWithSubmenu(submenuId, !isOpen);
-        },
-        changePage(timegap) {
-            window.location.href = `https://webapp.syntxai.net?page=account&timegap=${timegap}${window.location.hash}`;
-        },
-        changeReferralsPage(timegap) {
-            window.location.href = `https://webapp.syntxai.net?page=partner&section=referrals&timegap=${timegap}${window.location.hash}`;
-        },
-        changePricingPage(priceSection) {
-            window.location.href = `https://webapp.syntxai.net?page=subscription&section=pricing&priceSection=${priceSection}`;
-        },
-        changeReferralBalancePage(priceSection) {
-            window.location.href = `https://webapp.syntxai.net?page=partner&section=partnerbalance&priceSection=${priceSection}&PHPSESSID=e1138c8fed5233fe7479ae2434eb3389`;
-        },
-        changeTariff(tariffId) {
-            document.querySelectorAll('.tariff-block').forEach(el => el.classList.remove('active'));
-            document.getElementById(tariffId).classList.add('active');
-            document.querySelectorAll('ul.pricingchoose li').forEach(li => li.classList.remove('active'));
-            document.querySelector(`ul.pricingchoose li[onclick="changeTariff('${tariffId}')"]`)?.classList.add('active');
-            history.pushState(null, null, `#${tariffId}`);
-        },
-        initializeActiveTariff() {
-            const hash = window.location.hash.replace('#', '');
-            if (hash && document.getElementById(hash)) {
-                this.changeTariff(hash);
-            } else {
-                this.changeTariff('basic');
-            }
-        },
-        initLoadingScreen() {
-            const loadingScreen = document.getElementById('loadingScreen');
-            const links = document.querySelectorAll('a[href]');
-
-            links.forEach(link => {
-                link.addEventListener('click', () => {
-                    loadingScreen.style.display = 'flex';
-                    loadingScreen.classList.remove('fadeOut');
-                });
-            });
-
-            window.addEventListener('load', () => {
-                loadingScreen.classList.add('fadeOut');
-                loadingScreen.addEventListener('animationend', () => {
-                    loadingScreen.style.display = 'none';
-                });
-            });
-        },
-        initPromocodeCopy() {
-            const notification = document.getElementById('copy-notification');
-            document.querySelectorAll('span.promocode').forEach(span => {
-                span.style.cursor = 'pointer';
-                span.addEventListener('click', async () => {
-                    const promoCode = span.innerText;
-                    try {
-                        await navigator.clipboard.writeText(promoCode);
-                        notification.style.display = 'block';
-                        setTimeout(() => (notification.style.display = 'none'), 3000);
-                    } catch (error) {
-                        console.error('Ошибка копирования:', error);
-                        alert(`Не удалось скопировать. Скопируйте вручную: ${promoCode}`);
-                    }
-                });
-            });
-        },
-        initSlider() {
-            const slider = document.getElementById('myRange');
-            slider.min = 0;
-            slider.max = this.steps.length - 1;
-            slider.value = this.selectedStepIndex;
-            slider.addEventListener('input', this.updateSliderValues);
-            this.updateSliderValues();
-        },
-        updateSliderValues() {
-            const slider = document.getElementById('myRange');
-            const outputValue = document.getElementById('value');
-            const stepValue = this.steps[slider.value];
-            const currentPrices = this.prices[stepValue];
-
-            outputValue.textContent = stepValue;
-
-            ['RUB', 'EUR', 'USD', 'STARS'].forEach(currency => {
-                document.querySelectorAll(`.price${currency}`).forEach(el => {
-                    el.textContent = currentPrices[currency].toFixed(2);
-                });
-            });
-
-            const perToken = {
-                RUB: 'pricePerTokenRUB',
-                EUR: 'pricePerTokenEUR',
-                USD: 'pricePerTokenUSD',
-                STARS: 'pricePerTokenSTARS',
-            };
-
-            for (let key in perToken) {
-                const el = document.getElementById(perToken[key]);
-                if (el) el.textContent = (currentPrices[key] / stepValue).toFixed(4);
-            }
-
-            const discount = (currentPrices.USD * 0.95).toFixed(2);
-            const priceUsdDiscount = document.getElementById('priceUSDDiscount');
-            const priceUsdDiscountPaykilla = document.getElementById('priceUSDDiscountPaykilla');
-            if (priceUsdDiscount) priceUsdDiscount.textContent = discount;
-            if (priceUsdDiscountPaykilla) priceUsdDiscountPaykilla.textContent = discount;
-
-            const tokenAmountElement = document.getElementById('tokenAmount');
-            if (tokenAmountElement) tokenAmountElement.value = stepValue;
-        },
-        toggleTooltip(element) {
-            const tooltip = element.querySelector('.tooltip');
-            const isVisible = tooltip.style.display === 'block';
-
-            document.querySelectorAll('.tooltip').forEach(el => el.style.display = 'none');
-
-            if (!isVisible) {
-                tooltip.style.display = 'block';
-                setTimeout(() => document.addEventListener('click', this.documentClickHandler), 0);
-            } else {
-                document.removeEventListener('click', this.documentClickHandler);
-            }
-        },
-        documentClickHandler(event) {
-            document.querySelectorAll('.tooltip').forEach(tooltip => {
-                if (!tooltip.contains(event.target) && !tooltip.parentElement.contains(event.target)) {
-                    tooltip.style.display = 'none';
-                }
-            });
-            document.removeEventListener('click', this.documentClickHandler);
-        }
     }
 }
 </script>
@@ -226,16 +42,16 @@ export default {
 
     <PartnerNavigationComponent />
 
-    <section class="box margin white">
-        <div class="question">
-            <i class="bi bi-lightbulb-fill ok"></i> Рекомендуем посмотреть <a target="_blank" href="https://youtu.be/BW9f0nUdpAo">ознакомительное видео, экскурсия по партнерской программе за полторы минуты (КЛИК)</a>.
-        </div>
-    </section>
-    <section class="box margin white">
-        <div class="question">
-            <i class="bi bi-lightbulb-fill ok"></i> Рекомендуем посмотреть <a target="_blank" href="https://docs.syntx.ai/%F0%9F%A4%9D+%D0%9F%D0%B0%D1%80%D1%82%D0%BD%D0%B5%D1%80%D1%81%D0%BA%D0%B0%D1%8F+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0">полную инструкцию в нашей базе знаний (КЛИК)</a>.
-        </div>
-    </section>
+<!--    <section class="box margin white">-->
+<!--        <div class="question">-->
+<!--            <i class="bi bi-lightbulb-fill ok"></i> Рекомендуем посмотреть <a target="_blank" href="https://youtu.be/BW9f0nUdpAo">ознакомительное видео, экскурсия по партнерской программе за полторы минуты (КЛИК)</a>.-->
+<!--        </div>-->
+<!--    </section>-->
+<!--    <section class="box margin white">-->
+<!--        <div class="question">-->
+<!--            <i class="bi bi-lightbulb-fill ok"></i> Рекомендуем посмотреть <a target="_blank" href="https://docs.syntx.ai/%F0%9F%A4%9D+%D0%9F%D0%B0%D1%80%D1%82%D0%BD%D0%B5%D1%80%D1%81%D0%BA%D0%B0%D1%8F+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0">полную инструкцию в нашей базе знаний (КЛИК)</a>.-->
+<!--        </div>-->
+<!--    </section>-->
 
     <section class="box margin white">
         <div class="question">
@@ -304,7 +120,7 @@ export default {
             <i class="bi bi-question-square-fill red"></i> Проводятся ли зачисления за отдельную покупку токенов (не подписка)?
         </div>
         <div class="answer">
-            <i class="bi bi-lightbulb-fill ok"></i> Да. С любой оплаты реферала в рамках чат-бота SYNTX будет проведено автоматическое зачисление % на счет партнера.
+            <i class="bi bi-lightbulb-fill ok"></i> Да. С любой оплаты реферала в рамках чат-бота будет проведено автоматическое зачисление % на счет партнера.
         </div>
     </section>
 
@@ -333,7 +149,7 @@ export default {
             <i class="bi bi-question-square-fill red"></i> Токены партнера это те же токены, что и токены в аккаунте чат-бота?
         </div>
         <div class="answer">
-            <i class="bi bi-lightbulb-fill ok"></i> Баланс партнера и баланс аккаунта в чат-боте Syntx разделен. При этом, эквивалент токенов равноценен.
+            <i class="bi bi-lightbulb-fill ok"></i> Баланс партнера и баланс аккаунта в чат-боте разделен. При этом, эквивалент токенов равноценен.
         </div>
     </section>
 
@@ -348,7 +164,7 @@ export default {
             2. Перевести на личный счет для использования внутри чат-бота.<br />
             3. Подарить (перевести) другому пользователю.
             <br /><br />
-            <i>*Если приобретать токены для работы с Syntx чат-ботом за деньги, стоимость одной единицы менее выгодна, нежели использовать токены, полученные в виде вознаграждения за привлечение рефералов.</i>
+            <i>*Если приобретать токены для работы с чат-ботом за деньги, стоимость одной единицы менее выгодна, нежели использовать токены, полученные в виде вознаграждения за привлечение рефералов.</i>
         </div>
     </section>
 
@@ -369,9 +185,6 @@ export default {
     </section>
 
     <div class="bottom"></div>
-
-    <div class="bottom-info">
-        Время сервера: 15.06.2025 23:25 | ID: 1337592809    </div>
     <NavigationComponent />
 
 </template>

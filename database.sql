@@ -2,6 +2,7 @@ use ai_bot;
 
 -- Таблица users
 CREATE TABLE users (
+	id INT AUTO_INCREMENT PRIMARY KEY,
     user_id VARCHAR(255) NOT NULL PRIMARY KEY,
     date_sub VARCHAR(255),
     payment_data VARCHAR(255),
@@ -14,6 +15,7 @@ CREATE TABLE users (
 
 -- Таблица models
 CREATE TABLE models (
+	id INT AUTO_INCREMENT PRIMARY KEY,
     model VARCHAR(255) NOT NULL PRIMARY KEY,
     name VARCHAR(255),
     description VARCHAR(255),
@@ -22,6 +24,7 @@ CREATE TABLE models (
 
 -- Таблица subs
 CREATE TABLE subs (
+	id INT AUTO_INCREMENT PRIMARY KEY,
     type VARCHAR(255),
     name VARCHAR(255),
     price INT,

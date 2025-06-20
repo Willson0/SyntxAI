@@ -30,7 +30,7 @@ export default {
     mounted() {
         this.initEventListeners();
         this.initializeSubMenus();
-        this.initializeActiveTariff();
+        // this.initializeActiveTariff();
         this.updateValues();
 
         this.emojiTooltip = document.getElementById('emojiTooltip');
@@ -74,12 +74,12 @@ export default {
                 });
             });
 
-            window.addEventListener('load', () => {
-                loadingScreen.classList.add('fadeOut');
-                loadingScreen.addEventListener('animationend', () => {
-                    loadingScreen.style.display = 'none';
-                });
-            });
+            // window.addEventListener('load', () => {
+            //     loadingScreen.classList.add('fadeOut');
+            //     loadingScreen.addEventListener('animationend', () => {
+            //         loadingScreen.style.display = 'none';
+            //     });
+            // });
 
             document.querySelectorAll('span.promocode').forEach(span => {
                 span.style.cursor = "pointer";
@@ -164,23 +164,23 @@ export default {
         changeReferralBalancePage(priceSection) {
             window.location.href = `https://webapp.syntxai.net?page=partner&section=partnerbalance&priceSection=${priceSection}&PHPSESSID=f6e922d0bb8512def10eb1ddcc788cd0`;
         },
-        changeTariff(tariffId) {
-            const tariffs = document.getElementsByClassName('tariff-block');
-            [...tariffs].forEach(t => t.classList.remove('active'));
-            document.getElementById(tariffId).classList.add('active');
-
-            document.querySelectorAll('ul.pricingchoose li').forEach(li => li.classList.remove('active'));
-            const target = document.querySelector(`ul.pricingchoose li[onclick="changeTariff('${tariffId}')"]`);
-            if (target) target.classList.add('active');
-
-            history.pushState(null, null, `#${tariffId}`);
-        },
-        initializeActiveTariff() {
-            const hash = window.location.hash.replace('#', '');
-            this.changeTariff(hash || 'basic');
-        },
+        // changeTariff(tariffId) {
+        //     const tariffs = document.getElementsByClassName('tariff-block');
+        //     [...tariffs].forEach(t => t.classList.remove('active'));
+        //     document.getElementById(tariffId).classList.add('active');
+        //
+        //     document.querySelectorAll('ul.pricingchoose li').forEach(li => li.classList.remove('active'));
+        //     const target = document.querySelector(`ul.pricingchoose li[onclick="changeTariff('${tariffId}')"]`);
+        //     if (target) target.classList.add('active');
+        //
+        //     history.pushState(null, null, `#${tariffId}`);
+        // },
+        // initializeActiveTariff() {
+        //     const hash = window.location.hash.replace('#', '');
+        //     this.changeTariff(hash || 'basic');
+        // },
         updateValues() {
-            const slider = document.getElementById("myRange");
+            // const slider = document.getElementById("myRange");
             const outputValue = document.getElementById("value");
             const rubElements = document.querySelectorAll(".priceRUB");
             const eurElements = document.querySelectorAll(".priceEUR");
@@ -195,30 +195,30 @@ export default {
             const priceUsdDiscountPaykilla = document.getElementById("priceUSDDiscountPaykilla");
             const tokenAmountElement = document.getElementById("tokenAmount");
 
-            slider.addEventListener('input', () => {
-                const stepValue = this.steps[slider.value];
-                const currentPrices = this.prices[stepValue];
-                outputValue.textContent = stepValue;
-
-                rubElements.forEach(el => el.textContent = currentPrices.RUB.toFixed(2));
-                eurElements.forEach(el => el.textContent = currentPrices.EUR.toFixed(2));
-                usdElements.forEach(el => el.textContent = currentPrices.USD.toFixed(2));
-                starsElements.forEach(el => el.textContent = currentPrices.STARS.toFixed(2));
-
-                pricePerTokenRub.textContent = (currentPrices.RUB / stepValue).toFixed(2);
-                pricePerTokenEur.textContent = (currentPrices.EUR / stepValue).toFixed(4);
-                pricePerTokenUsd.textContent = (currentPrices.USD / stepValue).toFixed(4);
-                pricePerTokenStars.textContent = (currentPrices.STARS / stepValue).toFixed(4);
-
-                const discounted = currentPrices.USD * 0.95;
-                priceUsdDiscount.textContent = discounted.toFixed(2);
-                priceUsdDiscountPaykilla.textContent = discounted.toFixed(2);
-
-                tokenAmountElement.value = stepValue;
-            });
-
-            slider.value = this.steps.indexOf(500);
-            slider.dispatchEvent(new Event('input'));
+            // slider.addEventListener('input', () => {
+            //     const stepValue = this.steps[slider.value];
+            //     const currentPrices = this.prices[stepValue];
+            //     outputValue.textContent = stepValue;
+            //
+            //     rubElements.forEach(el => el.textContent = currentPrices.RUB.toFixed(2));
+            //     eurElements.forEach(el => el.textContent = currentPrices.EUR.toFixed(2));
+            //     usdElements.forEach(el => el.textContent = currentPrices.USD.toFixed(2));
+            //     starsElements.forEach(el => el.textContent = currentPrices.STARS.toFixed(2));
+            //
+            //     pricePerTokenRub.textContent = (currentPrices.RUB / stepValue).toFixed(2);
+            //     pricePerTokenEur.textContent = (currentPrices.EUR / stepValue).toFixed(4);
+            //     pricePerTokenUsd.textContent = (currentPrices.USD / stepValue).toFixed(4);
+            //     pricePerTokenStars.textContent = (currentPrices.STARS / stepValue).toFixed(4);
+            //
+            //     const discounted = currentPrices.USD * 0.95;
+            //     priceUsdDiscount.textContent = discounted.toFixed(2);
+            //     priceUsdDiscountPaykilla.textContent = discounted.toFixed(2);
+            //
+            //     tokenAmountElement.value = stepValue;
+            // });
+            //
+            // slider.value = this.steps.indexOf(500);
+            // slider.dispatchEvent(new Event('input'));
         },
         toggleTooltip(element) {
             const tooltip = element.querySelector('.tooltip');
@@ -289,7 +289,7 @@ export default {
 
     <section class=" margin">
         <div class="infoBlock" style="margin: 0;">
-            <i class="bi bi-info-square-fill"></i> Отправляйте друзьям/коллегам свою уникальную ссылку, чтобы зарабатывать вместе с SYNTX 👇    </div>
+            <i class="bi bi-info-square-fill"></i> Отправляйте друзьям/коллегам свою уникальную ссылку, чтобы зарабатывать вместе 👇    </div>
         <div class="statistics">
             <div class="stat-item promocodes">
                 <div>
@@ -322,9 +322,6 @@ export default {
     <div id="copy-notification" class="copy-notification" style="display: none;">
         Реферальная ссылка скопирована.</div>
     <div class="bottom"></div>
-
-    <div class="bottom-info">
-        Время сервера: 15.06.2025 22:38 | ID: 1337592809    </div>
     <NavigationComponent />
 </template>
 

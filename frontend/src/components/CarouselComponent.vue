@@ -17,13 +17,13 @@ export default {
             startX: 0,
             currentX: 0,
             updatedSlides: [
-                { href: "https://t.me/syntxfamily/2094", src: "5.jpg", alt: "Slide 15", duration: 3000 },
-                { href: "https://t.me/syntxfamily/1834", src: "1.jpg", alt: "Slide 11", duration: 3000 },
-                { href: "https://t.me/syntxfamily/2175", src: "2.jpg", alt: "Slide 18", duration: 3000 },
-                { href: "https://t.me/syntxfamily/2158", src: "3.jpg", alt: "Slide 17", duration: 3000 },
-                { href: "https://t.me/syntxfamily/2138", src: "4.jpg", alt: "Slide 16", duration: 3000 },
-                { href: "https://t.me/syntxfamily/2094", src: "5.jpg", alt: "Slide 15", duration: 3000 },
-                { href: "https://t.me/syntxfamily/1834", src: "1.jpg", alt: "Slide 11", duration: 3000 },
+                { href: "", src: "5.jpg", alt: "Slide 15", duration: 3000 },
+                { href: "", src: "1.jpg", alt: "Slide 11", duration: 3000 },
+                { href: "", src: "2.jpg", alt: "Slide 18", duration: 3000 },
+                { href: "", src: "3.jpg", alt: "Slide 17", duration: 3000 },
+                { href: "", src: "4.jpg", alt: "Slide 16", duration: 3000 },
+                { href: "", src: "5.jpg", alt: "Slide 15", duration: 3000 },
+                { href: "", src: "1.jpg", alt: "Slide 11", duration: 3000 },
            ],
         };
     },
@@ -47,7 +47,7 @@ export default {
         this.resetTimer();
 
         const tooltip = document.getElementById('emojiTooltip');
-        tooltip.addEventListener('click', this.toggleEmojiTooltip);
+        // tooltip.addEventListener('click', this.toggleEmojiTooltip);
         document.addEventListener('click', this.hideEmojiTooltip);
     },
     beforeUnmount() {
