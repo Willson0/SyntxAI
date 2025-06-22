@@ -3,14 +3,24 @@ use ai_bot;
 -- Таблица users
 CREATE TABLE users (
 	id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id VARCHAR(255) NOT NULL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
     date_sub VARCHAR(255),
     payment_data VARCHAR(255),
     model VARCHAR(255),
     referer_id VARCHAR(255),
     referals INT,
     ai_tokens FLOAT,
-    order_id INT DEFAULT 0
+    order_id INT DEFAULT 0,
+    midjourney_promt VARCHAR (5000),
+    audio_answer VARCHAR (50),
+    audio_voice VARCHAR (50),
+    need_model_name INT (11),
+    instructions VARCHAR (4096),
+    sub_name VARCHAR (100),
+    notify_tokens INT (11),
+    notify_refs INT (11),
+    notify_refs_buy INT (11),
+    notify_about_updates INT (11)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Таблица models
@@ -56,5 +66,6 @@ CREATE TABLE payments (
     user_id VARCHAR(50) NOT NULL,
     payment_sum FLOAT NOT NULL,
     payment_date VARCHAR(100) NOT NULL,
-    type VARCHAR(50) NOT NULL
+    type VARCHAR(50) NOT NULL,
+    sub_name VARCHAR (100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
