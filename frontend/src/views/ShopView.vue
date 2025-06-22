@@ -1,40 +1,70 @@
 <script>
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import NavigationComponent from "@/components/NavigationComponent.vue";
+import config from "@/config.json";
+import axios from "axios";
 
 export default {
     name: "ShopView",
     components: {NavigationComponent, HeaderComponent},
     data() {
         return {
-            tariff: "Free",
             tokens: 0,
             period: 1,
-            costPerMonth: 1000,
             costPerToken: 2,
+            sub: {},
         };
     },
-    mounted() {
-        this.tariff = this.$route.query.plan;
+    async mounted() {
         this.tokens = this.$route.query.tokens;
+
+        await axios.get (config.backend + "subscription/" + this.$route.query.plan).then((response) => {
+            this.sub = response.data;
+        }).catch((error) => {
+            alert("Ошибка:\n" + error.response.data.message);
+        });
     },
     methods: {
+        async sendData () {
+            await axios.post(config.backend + "subscription/subscribe", {
+                initData: window.Telegram.WebApp.initData,
+                tokens: this.tokens,
+                subscription: this.sub.id,
+                period: this.period,
+            }).then((response) => {
+                let a = document.createElement('a');
+                a.href = response.data.url;
+                a.target = '_self';
+                a.style.display = 'none';
 
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }).catch((error) => {
+                alert("Ошибка:\n" + error.response.data.message);
+            });
+        }
     },
     computed: {
         username () {
             return (window.Telegram.WebApp.initDataUnsafe.user.first_name + " " + window.Telegram.WebApp.initDataUnsafe.user.last_name);
         },
         price () {
-            let priceInt = this.costPerMonth * this.period -
-                (this.costPerMonth * this.period * Math.min(Math.floor(this.period / 3)*0.05, 0.3))
+            let priceInt = this.sub.price * this.period -
+                (this.sub.price * this.period * Math.min(Math.floor(this.period / 3)*0.05, 0.3))
                 + this.tokens * this.costPerToken;
 
             return priceInt.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
-        }
+        },
+        sale () {
+            return Math.min(Math.floor(this.period / 3)*0.05, 0.3)*100;
+        },
+        user() {
+            return this.$store.state.user;
+        },
     }
 }
 </script>
@@ -43,9 +73,9 @@ export default {
     <HeaderComponent />
     <section class="margin white relative">
         <a class="close-button" style="position: absolute; top: 15px; right: 15px;"
-           href="https://webapp.syntxai.net?page=subscription&changingPlan=pro&PHPSESSID=ec48f339284f0424b862e2132a3c98e7"><i
+           href="/subscriptions"><i
             class="bi bi-x-lg"></i></a>
-        <h2 class="mb_10">Тариф        <span>{{ tariff }}</span></h2>
+        <h2 class="mb_10">Тариф        <span>{{ sub.name }}</span></h2>
 <!--        <div class="hint">* Вы можете подарить подписку</div>-->
 <!--        <form method="POST" action=""><input type="hidden" name="PHPSESSID" value="ec48f339284f0424b862e2132a3c98e7" />-->
 <!--            <input type="hidden" name="formId" value="userToGift">-->
@@ -88,7 +118,7 @@ export default {
                             6 месяцев -10%
                         </option>
                         <option value="12">
-                            12 месяцев -15%
+                            12 месяцев -20%
                         </option>
                     </select>
                     <i class="bi bi-chevron-double-down"></i>
@@ -109,7 +139,7 @@ export default {
         </div>
         <div class="defRow">
             <div class="leftCell">Итоговая скидка:</div>
-            <div class="rightCell">0%</div>
+            <div class="rightCell">{{ sale }}%</div>
         </div>
         <div class="defRow">
             <div class="leftCell">Итоговая цена:</div>
@@ -121,10 +151,10 @@ export default {
 
         <!-- TG Stars -->
         <div class="payment-info button" data-duration="1" data-method="tgstars">
-            <form method="post" action=""><input type="hidden" name="PHPSESSID" value="ec48f339284f0424b862e2132a3c98e7" />
+            <form method="post" action="">
+                <input type="hidden" name="PHPSESSID" value="ec48f339284f0424b862e2132a3c98e7" />
                 <input type="hidden" name="action" value="invoice_tgstars">
-                <button style="padding: 14px;" class="cardButton mt_10">СЧЕТ
-                </button>
+                <button type="button" style="padding: 14px;" class="cardButton mt_10" @click="sendData">СЧЕТ</button>
             </form>
         </div>
 <!--        <div style="display: flex;-->

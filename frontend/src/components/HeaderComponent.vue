@@ -56,9 +56,9 @@ export default {
                 <img width="75px" height="75px" src="/logo.png" alt="">
             </a>
             <div class="tokensInfo">{{ user.ai_tokens }}<i class="bi bi-lightning-charge-fill lightning"></i></div>
-<!--            <div class="subscription-info">-->
-<!--                💼 FREE-->
-<!--            </div>-->
+            <div class="subscription-info">
+                {{ user.sub_name }}
+            </div>
         </div>
         <div class="rightBlock">
             <nav>

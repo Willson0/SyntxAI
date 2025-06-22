@@ -14,6 +14,7 @@ import TextSettingsView from "@/views/Tools/Text/TextSettingsView.vue";
 import TextDialogsView from "@/views/Tools/Text/TextDialogsView.vue";
 import TextChatView from "@/views/Tools/Text/TextChatView.vue";
 import ImageSettingsView from "@/views/Tools/Image/ImageSettingsView.vue";
+import withdrawView from "@/views/WithdrawView.vue";
 
 const routes = [
     {
@@ -23,6 +24,10 @@ const routes = [
     {
         path: "/partner",
         component: PartnerView,
+    },
+    {
+        path: "/partner/withdraw",
+        component: withdrawView,
     },
     {
         path: "/partner/my",

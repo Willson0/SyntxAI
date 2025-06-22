@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PaymentSubscribeRequest extends FormRequest
+class TokenBuyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,7 @@ class PaymentSubscribeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "tokens" => "integer|min:0",
-            "subscription" => "integer|required|exists:subs,id",
-            "period" => "integer|required",
+            "tokens" => "required|integer|min:0",
         ];
     }
 }

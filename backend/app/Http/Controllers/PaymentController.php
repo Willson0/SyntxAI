@@ -6,6 +6,8 @@ use App\Http\Requests\PaymentSubscribeRequest;
 use App\Models\Payment;
 use App\Models\Sub;
 use App\Models\TelegramUser;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use YooKassa\Client;
@@ -13,28 +15,30 @@ use YooKassa\Client;
 class PaymentController extends Controller
 {
     public function subscribe (PaymentSubscribeRequest $request) {
-        if (!$request->has("subscription")) abort(422);
+        $user = User::where("user_id", $request["initData"]["user"]["id"])->first();
+        $sub = Sub::where("type", "sub")->where("id", $request["subscription"])->firstOrFail();
 
-        $user = TelegramUser::where("telegram_id", $request["initData"]["user"]["id"])->firstOrFail()->user;
+        if (!$request->has("tokens")) $request["tokens"] = 0;
 
-        $sub = Sub::where("type", "sub")->where("name", $request["subscription"])->firstOrFail();
-
+        $TOKEN_COST = 2;
+        $price = $sub->price * $request["period"] - ($sub->price * $request["period"] * min(floor($request["period"] / 3)*0.05, 0.3))
+            + $request["tokens"] * $TOKEN_COST;
 
         $client = new Client();
         $client->setAuth(env("SHOP_ID"), env("YOOKASSA_API_KEY"));
 
         $payment = Payment::create([
             "user_id" => $user->id,
-            "amount" => $subs[$subscription],
-            "yookassa_id" => "creating...",
-            "status" => 0,
-            "sub_lvl" => $subscription,
+            "payment_sum" => $price,
+            "payment_date" => Carbon::now(),
+            "type" => "sub",
+            "sub_name" => $sub->name,
         ]);
 
         $response = $client->createPayment(
             [
                 'amount' => [
-                    'value' =>  number_format($payment->amount, 2, '.', ''),
+                    'value' =>  number_format($payment->payment_sum, 2, '.', ''),
                     'currency' => 'RUB',
                 ],
                 'confirmation' => [
@@ -42,12 +46,12 @@ class PaymentController extends Controller
                     'return_url' => 'https://' . env("DOMAIN"),
                 ],
                 'capture' => true,
-                'description' => 'Оплата платной услуги. Уровень: ' . ($subscription+1),
+                'description' => 'Оплата платной услуги. Подписка: ' . $sub->name . ". Токены: " . $request["tokens"],
             ],
             uniqid('', true)
         );
 
-        $payment->yookassa_id = $response->id;
+//        $payment->yookassa_id = $response->id;
         $payment->save();
 
         return response()->json(["url" => $response->confirmation->getConfirmationUrl()]);
