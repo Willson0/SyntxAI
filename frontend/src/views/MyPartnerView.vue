@@ -52,8 +52,8 @@ export default {
             <div class="stat-item" v-for="(partner, key) in partners" v-else>
                 <div>
                     <span class="stat-icon"><i class="bi bi-person-plus-fill"></i></span>
-                    <span class="stat-text payments_details"><span>#{{ key }} {{partner.user_id}} </span></span>
-                    <span class="stat-number payments_amounts">11.11.1111 11:11</span>
+                    <span class="stat-text payments_details"><span>#{{ key+1 }} {{partner.username}} </span></span>
+                    <span class="stat-number payments_amounts">{{ new Date(partner.created_at).toLocaleString() }}</span>
                 </div>
             </div>
 

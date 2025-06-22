@@ -516,6 +516,54 @@ export default {
       const modal = document.getElementById("planModal");
       modal.style.display = "none";
     },
+      description (id) {
+        console.log(this.subscriptions[id]?.usage_by_type);
+        if (!this.subscriptions[id]?.usage_by_type) return;
+            let usage_by_type = JSON.parse(this.subscriptions[id]?.usage_by_type);
+            let usage = JSON.parse(this.subscriptions[id]?.usage);
+          const descriptionItems = [];
+
+          // Базовый функционал
+          descriptionItems.push('<li><b>Частичный</b> функционал чат-бота</li>');
+
+          // Обработка лимитов по типам контента
+          if (Object.keys(usage_by_type).length > 0) {
+              for (const [type, limit] of Object.entries(usage_by_type)) {
+                  let typeName;
+                  switch(type) {
+                      case 'text': typeName = 'текстовых запросов'; break;
+                      case 'photo': typeName = 'запросов с фото'; break;
+                      case 'video': typeName = 'запросов с видео'; break;
+                      default: typeName = `запросов (${type})`;
+                  }
+                  descriptionItems.push(`<li>+ ${limit} ${typeName}/24ч.</li>`);
+              }
+          }
+
+          // Обработка лимитов по моделям
+          if (Object.keys(usage).length > 0) {
+              const unlimitedModels = [];
+              const limitedModels = [];
+
+              for (const [model, limit] of Object.entries(usage)) {
+                  if (limit === 'unlimited' || limit === -1) {
+                      unlimitedModels.push(model);
+                  } else {
+                      limitedModels.push(`<li>+ ${limit} запросов/24ч. в ${model}</li>`);
+                  }
+              }
+
+              // Добавляем ограниченные модели
+              descriptionItems.push(...limitedModels);
+
+              // Добавляем безлимитные модели
+              if (unlimitedModels.length > 0) {
+                  descriptionItems.push(`<li>+ <b>Безлимит</b> ${unlimitedModels.join(', ')}</li>`);
+              }
+          }
+
+          return descriptionItems.join('\n    ');
+      }
   },
 };
 </script>
@@ -550,22 +598,14 @@ export default {
               <span>300 токенов</span>
             </div>
           </div>
-          <ul class="cardInfoTable">
-            <li>Частичный функционал чат-бота</li>
-            <li>+ 10 запросов/час в языковые модели</li>
-            <li>+ 60 запросов/24ч. в языковые модели</li>
-            <li>+ <b>Безлимит</b> GPT 4o-mini, Claude Haiku</li>
-            <li>+ <b>Бесплатно</b> Stable Diffusion</li>
-            <li>+ <b>Бесплатно</b> Kling Try-On</li>
-            <li>+ <b>Бесплатно</b> Google AI Editor</li>
-            <li>+ <b>Бесплатно</b> Google Imagen 4</li>
+          <ul class="cardInfoTable" v-html="description(key)">
           </ul>
-          <a
-            class="cardMore"
-            @click="openModal(key)"
-            style="text-decoration: underline"
-            >Что входит в тариф?</a
-          >
+<!--          <a-->
+<!--            class="cardMore"-->
+<!--            @click="openModal(key)"-->
+<!--            style="text-decoration: underline"-->
+<!--            >Что входит в тариф?</a-->
+<!--          >-->
           <div class="cardPrice" :id="'cardPrice' + key">
             <span class="price1" style="display: none">
               {{ subscription.price.toFixed(2) }}₽

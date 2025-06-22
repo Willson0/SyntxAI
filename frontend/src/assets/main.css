@@ -1722,7 +1722,7 @@ input:checked + .slider::after {
 }
 
 .top-nav > ul > li {
-    margin: 14px 4px;
+    margin: 14px 3px;
     text-align: center;
     flex: 1;
 }

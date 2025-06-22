@@ -1,4 +1,5 @@
 <script>
+
 import NavigationComponent from "@/components/NavigationComponent.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import PartnerNavigationComponent from "@/components/PartnerNavigationComponent.vue";
@@ -11,6 +12,7 @@ export default {
     data() {
         return {
             data: null,
+            config: config,
         };
     },
     async mounted() {
@@ -21,6 +23,26 @@ export default {
         }).catch((error) => {
 
         });
+
+        const notification = document.getElementById('copy-notification');
+        document.querySelectorAll('span.promocode').forEach(span => {
+            span.style.cursor = "pointer";
+            span.addEventListener('click', async function() {
+                const promoCode = this.innerText;
+                try {
+                    await navigator.clipboard.writeText(promoCode);
+                    notification.style.display = "block";
+                    setTimeout(() => notification.style.display = "none", 3000);
+                } catch (error) {
+                    console.error('Ошибка копирования:', error);
+                    if (error.name === 'NotAllowedError') {
+                        alert('Копирование в буфер обмена запрещено Вашей системой. Пожалуйста, скопируйте код вручную: ' + promoCode);
+                    } else {
+                        alert('Не удалось скопировать. Пожалуйста, скопируйте его вручную: ' + promoCode);
+                    }
+                }
+            });
+        });
     },
     methods: {
 
@@ -28,7 +50,24 @@ export default {
     computed: {
         telegram_id () {
             return window.Telegram.WebApp.initDataUnsafe.user.id;
-        }
+        },
+        boostSubscriptions () {
+            let result = "";
+            for (let key in this.data?.boost) {
+                result += "<b>" + this.data.boost[key].name + "</b> ";
+                if (parseInt(key) !== parseInt(this.data.boost.length - 1)) result += "и ";
+            }
+            return result;
+        },
+        isBoosted () {
+            for (let sub in this.data?.boost) {
+                if (this.data.boost[sub].name === this.user.sub_name) return true;
+            }
+            return false;
+        },
+        user() {
+            return this.$store.state.user;
+        },
     }
 }
 </script>
@@ -43,11 +82,11 @@ export default {
     <div class="switch-container">
         <span class="switch-label">🚀 BOOST</span>
         <label class="switch">
-            <input type="checkbox" id="toggle" disabled >
+            <input type="checkbox" :checked="isBoosted" id="toggle" disabled >
             <span class="slider no-allowed-cursor"></span>
         </label>
         <i class="bi bi-info-square-fill inline-info-btn" onclick="toggleTooltip(this)" style="margin-left: 10px;">
-            <span class="tooltip">С тарифом <b>VIP</b> 💎 и <b>ELITE</b> 💣 включается 🚀 BOOST и к вознаграждениям добавляется <b>еще 25%</b></span>
+            <span class="tooltip">С тарифом <span v-html="boostSubscriptions"></span> включается 🚀 BOOST и к вознаграждениям добавляется <b>еще 25%</b></span>
         </i>
     </div>
     <section class="box margin ">
@@ -85,7 +124,7 @@ export default {
                 <div>
                     <span class="stat-icon"><i class="bi bi-link-45deg"></i></span>
                     <span class="stat-text promocodes">
-                    <span class="promocode">https://t.me/syntxaibot?start=aff_{{ telegram_id }}</span>
+                    <span class="promocode" style="word-wrap: anywhere">{{ config.bot }}?start=aff_{{ telegram_id }}</span>
                     <p class="promocode-about"><i class="bi bi-copy"></i> Нажмите на ссылку, чтобы скопировать</p>
                 </span>
                 </div>

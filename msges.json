@@ -1,0 +1,46 @@
+{
+    "1": [
+        [
+            {
+                "role": "user",
+                "content": "Что нового? fdsfadsfadsfasdfaadsfadsfdfssdfasdfasdfasdf"
+            },
+            {
+                "role": "assistant",
+                "content": "Сегодня добавили новые функции в бота!"
+            }
+        ]
+    ],
+    "2": [
+        [
+            {
+                "role": "user",
+                "content": "Помоги с настройкой"
+            },
+            {
+                "role": "assistant",
+                "content": "Конечно! Что именно нужно настроить?"
+            }
+        ]
+    ],
+    "3": [
+        [
+            {
+                "role": "user",
+                "content": "Сколько времени?"
+            },
+            {
+                "role": "assistant",
+                "content": "Сейчас 15:30."
+            },
+            {
+                "role": "user",
+                "content": "Спасибо!"
+            },
+            {
+                "role": "assistant",
+                "content": "Не за что!"
+            }
+        ]
+    ]
+}

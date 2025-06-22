@@ -1,9 +1,16 @@
 <script>
 import TextModelsNavigationComponents from "@/components/TextModelsNavigationComponents.vue";
+import axios from "axios";
+import config from "@/config.json";
 
 export default {
     name: "TextDialogsView",
     components: {TextModelsNavigationComponents},
+    data () {
+        return {
+            dialogs: [],
+        }
+    },
     created () {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
@@ -16,7 +23,13 @@ export default {
         const link = document.getElementById('component-styles');
         if (link) link.remove();
     },
-    mounted () {
+    async mounted () {
+        await axios.post(config.backend + "dialog/my", {
+            initData: window.Telegram.WebApp.initData,
+        }).then((response) => {
+            this.dialogs = response.data;
+        })
+
         let currentlyEditing = null;
 
         document.body.addEventListener('click', function(event) {
@@ -189,14 +202,27 @@ export default {
         });
     },
     methods: {
-        confirmDelete() {
-            return confirm('Вы уверены, что хотите удалить эту запись?');
+        async confirmDelete(id) {
+            if (confirm('Вы уверены, что хотите удалить эту запись?')) {
+                await axios.post (config.backend + "dialog/" + id + "/delete", {
+                    initData: window.Telegram.WebApp.initData,
+                }).then((response) => {
+                    this.dialogs = response.data;
+
+                    const messageBox = document.getElementById('error_message');
+                    messageBox.style.display = 'block';
+                    setTimeout(() => {
+                        messageBox.style.display = 'none';
+                    }, 3000);
+                })
+            }
         }
     }
 }
 </script>
 
 <template>
+    <div id="error_message"><i class="bi bi-clipboard2-check-fill"></i> Диалог удалён.</div>
     <div class="notification">
         <i class="bi bi-info-square-fill"></i> Устанавливайте различные модели, используйте GPTs, сохраняйте свои индивидуальные настройки и контролируйте запросы в этом меню.</div>
 
@@ -214,27 +240,27 @@ export default {
     </section>
 
     <section class="box margin">
-        <div class="conversation-item" data-conversation-id="d06d0694-4823-c493-c2c83e98">
-            <div class="status">
-                <i class="bi bi-square-fill ok"></i>
-            </div>
+        <div class="conversation-item" v-for="(dialog, key) in dialogs">
+<!--            <div class="status">-->
+<!--                <i class="bi bi-square-fill ok"></i>-->
+<!--            </div>-->
             <div class="content">
-                <div class="title">
-                    <span class="title-text">Начало общения</span>
-                    <input type="text" class="title-edit" maxlength="250" style="display:none;">
-                    <i class="bi bi-pencil edit-icon"></i>
-                    <i class="bi bi-check-lg save-icon" style="display:none;"></i>
-                    <i class="bi bi-x-lg cancel-icon" style="display:none;"></i>
+                <div style="overflow:hidden;" class="title">
+                    <span class="title-text" style="white-space: nowrap; text-overflow: ellipsis">Тема: {{ dialog[0].content }}</span>
+<!--                    <input type="text" class="title-edit" maxlength="250" style="display:none;">-->
+<!--                    <i class="bi bi-pencil edit-icon"></i>-->
+<!--                    <i class="bi bi-check-lg save-icon" style="display:none;"></i>-->
+<!--                    <i class="bi bi-x-lg cancel-icon" style="display:none;"></i>-->
                 </div>
-                <span class="date">&gt; 18.06 22:56</span>
+<!--                <span class="date">&gt; 18.06 22:56</span>-->
             </div>
             <div class="button-container">
                 <form method="POST" style="display:inline;">
                     <input type="hidden" name="id" value="d06d0694-4823-c493-c2c83e98">
-                    <button type="submit" name="delete" class="err" @click="confirmDelete">
+                    <button type="button" name="delete" class="err" @click="confirmDelete(key)">
                         <i class="bi bi-x-lg"></i> Удалить                </button>
                 </form>
-                <a target="_self" href="/text/dialogs/2">
+                <a target="_self" :href="'/text/dialogs/' + key">
                     <i class="bi bi-box-arrow-up-right"></i> Посмотреть            </a>
             </div>
         </div>
@@ -242,5 +268,17 @@ export default {
 </template>
 
 <style scoped>
-
+    #error_message {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: green;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 1000;
+        white-space: nowrap; /* Prevents text from wrapping */
+    }
 </style>

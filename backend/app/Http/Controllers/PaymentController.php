@@ -48,26 +48,23 @@ class PaymentController extends Controller
                 'capture' => true,
                 'description' => 'Оплата платной услуги. Подписка: ' . $sub->name . ". Токены: " . $request["tokens"],
             ],
-            uniqid('', true)
+            $user->id . "_" . $payment->id . "_sub"
         );
 
-//        $payment->yookassa_id = $response->id;
+        $payment->yookassa_id = $response->id;
         $payment->save();
 
         return response()->json(["url" => $response->confirmation->getConfirmationUrl()]);
     }
 
     public function webhook (Request $request) {
-        Log::critical($request);
         $payment = Payment::where("yookassa_id", $request->object["id"])->first();
         if ($request->event === "payment.succeeded") {
-            $payment->status = 1;
+            $user = User::find($payment->user_id);
+            $sub = Sub::where("type", $payment->type)->where("name", $payment->sub_name)->first();
 
-            $user = $payment->user;
-
-            $user->subscription = $payment->sub_lvl;
-            if ($user->subscription == 2) $user->listen_tokens += 10;
-            else if ($user->subscription == 3) $user->listen_tokens = 1000;
+            $user->ai_tokens += $sub->ai_tokens;
+            if ($sub->type === "sub") $user->sub_name = $sub->name;
 
             $user->save();
         }

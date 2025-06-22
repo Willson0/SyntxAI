@@ -1,10 +1,12 @@
 <script>
-import config from "@/config.json"
+import axios from "axios";
+import config from "@/config.json";
 export default {
     name: "TextChatView",
     data () {
         return {
             config: config,
+            dialogs: [],
         }
     },
     created () {
@@ -19,7 +21,13 @@ export default {
         const link = document.getElementById('component-styles');
         if (link) link.remove();
     },
-    mounted () {
+    async mounted () {
+        await axios.post(config.backend + "dialog/my", {
+            initData: window.Telegram.WebApp.initData,
+        }).then((response) => {
+            this.dialogs = response.data[this.$route.params.id];
+        })
+
         document.body.style.fontFamily = "ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica, Apple Color Emoji, Arial, Segoe UI Emoji, Segoe UI Symbol"
         document.body.style.minHeight = "unset";
 
@@ -79,19 +87,6 @@ export default {
         });
     },
     methods: {
-        copyText(event) {
-            event.preventDefault(); // Предотвращает переход по ссылке
-            const textToCopy = "https://LLMchat.syntxai.net/d06d0694-4823-c493-c2c83e98";
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const messageBox = document.getElementById('error_message');
-                messageBox.style.display = 'block';
-                setTimeout(() => {
-                    messageBox.style.display = 'none';
-                }, 3000);
-            }).catch(err => {
-                console.error("Ошибка копирования текста: ", err);
-            });
-        },
         copyMessage (button, type) {
             const contentElement = button.closest('.content');
             let messageContent = this.cleanContent(contentElement, type === 'user');
@@ -178,20 +173,11 @@ export default {
 
     <section class="container mt-3">
         <div class="markdown-content">
-            <div class="message userquestion">
-                <div class="content">
-                    <p>Привет!</p>                    <button class="copy-message-button" @click="copyMessage($event.target, 'user')">
-                    <i class="bi bi-clipboard"></i> Скопировать                    </button>
-                </div>
-            </div>
-            <div class="message answer">
+            <div class="message" :class="dialog.role === 'user' ? 'userquestion' : 'answer'" v-for="dialog in dialogs">
                 <div class="logo"><img src="/syntxwhite.png" alt="Logo"></div>
                 <div class="content">
-                    <p>Привет! Как я могу помочь тебе сегодня?</p>                    <button class="copy-message-button" @click="copyMessage($event.target, 'assistant')">
+                    <p>{{ dialog.content }}</p>                    <button class="copy-message-button" @click="copyMessage($event.target, 'user')">
                     <i class="bi bi-clipboard"></i> Скопировать                    </button>
-                    <div style="opacity: 0.7; font-size: 11px;"><i class="bi bi-robot" style="margin-right: 4px;"></i>
-                        GPT-o1 Mini                </div>
-                    <div style="opacity: 0.7; font-size: 11px;"><i class="bi bi-clock-history" style="margin-right: 4px;"></i>18.06.2025 22:56:58 GMT+3</div>
                 </div>
             </div>
         </div>
@@ -426,6 +412,9 @@ mjx-container[jax="CHTML"][display="true"] mjx-math {
     max-width: 90%;
     padding: 0 10px;
     border-radius: 8px;
+}
+.message.userquestion > .logo {
+    display: none;
 }
 .message.userquestion .content {
     text-align: right;

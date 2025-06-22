@@ -255,6 +255,8 @@ export default {
         </div>
     </div>
 
+    <a href="/text/models">to text</a><br></br>
+    <a href="/image/settings">to image</a>
     <div class="bottom"></div>
     <NavigationComponent />
 

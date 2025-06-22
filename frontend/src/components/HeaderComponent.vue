@@ -35,10 +35,8 @@ export default {
 
 <template>
     <header>
-        <a href="/text/models">Secret link</a>
-        <a href="/image/settings">Secret link to image</a>
         <div class="leftBlock">
-            <a>
+            <a href="/">
 <!--                <svg-->
 <!--                    width="75px"-->
 <!--                    height="85px"-->

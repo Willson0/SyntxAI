@@ -4,6 +4,7 @@ use ai_bot;
 CREATE TABLE users (
 	id INT AUTO_INCREMENT PRIMARY KEY,
     user_id VARCHAR(255) NOT NULL,
+    username VARCHAR (32),
     date_sub VARCHAR(255),
     payment_data VARCHAR(255),
     model VARCHAR(255),
@@ -20,13 +21,15 @@ CREATE TABLE users (
     notify_tokens INT (11),
     notify_refs INT (11),
     notify_refs_buy INT (11),
-    notify_about_updates INT (11)
+    notify_about_updates INT (11),
+    earning INT,
+    created_at VARCHAR (32)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Таблица models
 CREATE TABLE models (
 	id INT AUTO_INCREMENT PRIMARY KEY,
-    model VARCHAR(255) NOT NULL PRIMARY KEY,
+    model VARCHAR(255) NOT NULL,
     name VARCHAR(255),
     description VARCHAR(255),
     if_active INT
@@ -42,7 +45,8 @@ CREATE TABLE subs (
     ai_tokens FLOAT,
     usage_by_type VARCHAR(255),
     `usage` VARCHAR(255),
-    if_active INT
+    if_active INT,
+    is_boost INT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Таблица promocodes
@@ -67,5 +71,6 @@ CREATE TABLE payments (
     payment_sum FLOAT NOT NULL,
     payment_date VARCHAR(100) NOT NULL,
     type VARCHAR(50) NOT NULL,
-    sub_name VARCHAR (100)
+    sub_name VARCHAR (100),
+    yookassa_id VARCHAR (100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

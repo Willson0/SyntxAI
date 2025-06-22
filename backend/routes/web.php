@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DialogController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SubscriptionController;
@@ -27,5 +28,9 @@ Route::group (["prefix" => "api"], function () {
     });
     Route::group (["prefix" => "partner", "middleware" => CheckTelegram::class], function () {
         Route::post("/my", [PartnerController::class, "my"]);
+    });
+    Route::group (["prefix" => "dialog", "middleware" => CheckTelegram::class], function () {
+        Route::post("/my", [DialogController::class, "index"]);
+        Route::post("/{id}/delete", [DialogController::class, "destroy"]);
     });
 });
