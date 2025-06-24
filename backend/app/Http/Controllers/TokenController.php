@@ -53,7 +53,7 @@ class TokenController extends Controller
             uniqid('', true)
         );
 
-//        $payment->yookassa_id = $response->id;
+        $payment->yookassa_id = $response->id;
         $payment->save();
 
         return response()->json(["url" => $response->confirmation->getConfirmationUrl()]);
