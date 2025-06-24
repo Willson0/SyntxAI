@@ -1,0 +1,39 @@
+{
+  "backend": "http://127.0.0.1:8000/api/",
+  "storage": "http://127.0.0.1:8000/storage/",
+  "bot": "https://t.me/development_testing_wilflw_bot",
+  "telegram": "https://t.me/rhymestg",
+  "telegram_group": "https://t.me/pyrokinesistg",
+  "instagram": "https://instagram.com",
+  "vk": "https://vk.com/logvinov524",
+  "youtube": "https://youtube.com/",
+  "models": {
+    "gpt-o1": "GPT-01 Mini",
+    "gpt-o3": "GPT-03 Mini",
+    "gpt-40": "GPT-4.0 Images",
+    "deepseek-r1": "DeepSeek V3",
+    "gemini-2": "Gemini 2.5 Flash",
+    "qwen-3": "Qwen 3 Thinking",
+    "claude-3": "Claude 3 Sonnet",
+    "claude-3-4": "Claude 3 Haiku",
+    "gpt-40-nano": "GPT-4.1 Nano",
+    "gpt-4-image-file": "GPT-4.0 Images + File"
+  },
+  "voices": {
+    "shimmer": "Shimmer (F)",
+    "echo": "Echo (M)",
+    "onyx": "Onyx (M)",
+    "fable": "Fable (M)",
+    "alloy": "Alloy (N)"
+  },
+  "slides": [
+    {"href": "", "src": "https://dummyimage.com/1200x400/000/fff.jpg&text=5", "alt": "Slide 15", "duration": 3000 },
+    {"href": "", "src": "https://dummyimage.com/600x400/000/fff.jpg&text=1", "alt": "Slide 15", "duration": 3000 },
+    {"href": "", "src": "https://dummyimage.com/600x1000/000/fff.jpg&text=2", "alt": "Slide 11", "duration": 3000 },
+    {"href": "", "src": "https://dummyimage.com/600x400/000/fff.jpg&text=3", "alt": "Slide 18", "duration": 3000 },
+    {"href": "", "src": "https://dummyimage.com/600x400/000/fff.jpg&text=4", "alt": "Slide 17", "duration": 3000 },
+    {"href": "", "src": "https://dummyimage.com/1200x400/000/fff.jpg&text=5", "alt": "Slide 15", "duration": 3000 },
+    {"href": "", "src": "https://dummyimage.com/600x400/000/fff.jpg&text=1", "alt": "Slide 15", "duration": 3000 }
+  ],
+  "logo": "/logo.png"
+}
