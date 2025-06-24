@@ -28,6 +28,7 @@ Route::group (["prefix" => "api"], function () {
     });
     Route::group (["prefix" => "partner", "middleware" => CheckTelegram::class], function () {
         Route::post("/my", [PartnerController::class, "my"]);
+        Route::post("/payout", [PaymentController::class, "payout"]);
     });
     Route::group (["prefix" => "dialog", "middleware" => CheckTelegram::class], function () {
         Route::post("/my", [DialogController::class, "index"]);

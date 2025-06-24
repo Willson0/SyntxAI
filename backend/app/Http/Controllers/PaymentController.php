@@ -89,4 +89,32 @@ class PaymentController extends Controller
         $payment->save();
         return response()->json();
     }
+
+    public function payout (Request $request) {
+        $user = User::where("user_id", $request["initData"]["user"]["id"])->first();
+
+        $client = new Client();
+        $client->setAuth(env("AGENT_ID"), env("YOOKASSA_API_KEY_PAYOUT"));
+
+        $response = $client->createPayout(
+            [
+                'amount' => [
+                    'value' =>  number_format($user->earning, 2, '.', ''),
+                    'currency' => 'RUB',
+                ],
+                'confirmation' => [
+                    'type' => 'redirect',
+                    'return_url' => 'https://' . env("DOMAIN"),
+                ],
+                "payout_token" => $request->data["payout_token"],
+                "description" => "Выплата денег за реферальные услуги",
+            ],
+            $user->id . "_" . time() . "_payout"
+        );
+
+        $user->earning = 0;
+        $user->save();
+
+        return response()->json(["status" => "ok"]);
+    }
 }

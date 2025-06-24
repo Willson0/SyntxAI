@@ -45,7 +45,9 @@ export default {
         });
     },
     methods: {
-
+        alerting () {
+            alert ('Вывести можно только более 50 рублей!')
+        }
     },
     computed: {
         telegram_id () {
@@ -113,7 +115,9 @@ export default {
                 </div>
             </div>
         </div>
-        <a href="/partner/withdraw" class="cardButton" style="width: 100%; display: block;">Вывести в <span style="font-size: 13px; font-weight: 600;">₽</span></a>
+        <a class="cardButton" style="width: 100%; display: block;" v-if="user.earning == null || user.earning < 50" @click="alerting() ; $event.preventDefault();">Вывести {{ user.earning ?? 0 }} <span style="font-size: 13px; font-weight: 600;">₽</span></a>
+        <a href="/partner/withdraw" v-else class="cardButton" style="width: 100%; display: block;">Вывести {{ user.earning ?? 0 }} <span style="font-size: 13px; font-weight: 600;">₽</span></a>
+
     </section>
 
     <section class=" margin">

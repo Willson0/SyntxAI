@@ -14,12 +14,6 @@ RUN apt-get update && apt-get install -y \
       apt-get clean && \
       rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN apt-get update && apt-get install -y cron
-RUN apt-get update && apt-get install -y netstat
-COPY ./php/laravel-cron /etc/cron.d/laravel-cron
-RUN chmod 0644 /etc/cron.d/laravel-cron && crontab /etc/cron.d/laravel-cron
-CMD service cron start
-
 COPY ./php/php.ini /usr/local/etc/php/conf.d/php.ini
 
 ENV COMPOSER_ALLOW_SUPERUSER=1

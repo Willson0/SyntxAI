@@ -2,6 +2,8 @@
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import PartnerNavigationComponent from "@/components/PartnerNavigationComponent.vue";
 import NavigationComponent from "@/components/NavigationComponent.vue";
+import config from "@/config.json";
+import axios from "axios";
 
 export default {
   name: "WithdrawView",
@@ -13,7 +15,6 @@ export default {
   async mounted() {
     const script = document.createElement("script");
     script.src = "https://yookassa.ru/payouts-data/3.1.0/widget.js";
-    script.async = true;
     script.onload = () => {
         this.initYooKassaWidget();
     };
@@ -23,19 +24,25 @@ export default {
         initYooKassaWidget() {
             const payoutData = new window.PayoutsData({
                 type: "payout",
-                success_callback: () => {
-                    alert ("great!");
+                account_id: '508885',
+                success_callback: (info) => {
+                    axios.post(config.backend + "partner/payout", {
+                        initData: window.Telegram.WebApp.initData,
+                        data: info,
+                    }).then((response) => {
+                        alert ("Успешно. Ожидайте выплаты.");
+                        window.location.href = "/";
+                    }).catch((error) => {
+                        alert ("Ошибка: " + error);
+                    })
                 },
                 error_callback: (error) => {
                     alert ("error: " + error);
                 },
-                account_id: 508885
             });
-            payoutData.render("YookassaChecker");
+            payoutData.render("yookassa").then(() => {
+            });
         },
-        success () {
-            alert ("Great!");
-        }
     }
 };
 </script>
@@ -43,14 +50,13 @@ export default {
 <template>
   <HeaderComponent />
 
-  <div
-    style="width: 100%; text-align: center; font-weight: 800; font-size: 15px"
-  >
+  <div style="width: 100%; text-align: center; font-weight: 800; font-size: 15px">
     WITHDRAW
   </div>
-    <div id="YookassaChecker"></div>
   <PartnerNavigationComponent />
+    <div id="yookassa"></div>
   <NavigationComponent />
 </template>
 
-<style src="../assets/main.css" scoped></style>
+<style scoped>
+</style>
