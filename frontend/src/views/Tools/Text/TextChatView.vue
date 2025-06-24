@@ -9,18 +9,18 @@ export default {
             dialogs: [],
         }
     },
-    // created () {
-    //     const link = document.createElement('link');
-    //     link.rel = 'stylesheet';
-    //     link.href = '/src/assets/TextModels.css';
-    //     link.id = 'component-styles'; // Чтобы потом удалить
-    //     document.head.appendChild(link);
-    // },
-    // beforeUnmount() {
-    //     // Удаляем стили при уничтожении компонента
-    //     const link = document.getElementById('component-styles');
-    //     if (link) link.remove();
-    // },
+    created () {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/src/assets/TextModels.css';
+        link.id = 'component-styles'; // Чтобы потом удалить
+        document.head.appendChild(link);
+    },
+    beforeUnmount() {
+        // Удаляем стили при уничтожении компонента
+        const link = document.getElementById('component-styles');
+        if (link) link.remove();
+    },
     async mounted () {
         await axios.post(config.backend + "dialog/my", {
             initData: window.Telegram.WebApp.initData,

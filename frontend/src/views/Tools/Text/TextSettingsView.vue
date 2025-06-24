@@ -11,18 +11,18 @@ export default {
             config: config,
         }
     },
-    // created () {
-    //     const link = document.createElement('link');
-    //     link.rel = 'stylesheet';
-    //     link.href = '/src/assets/TextModels.css';
-    //     link.id = 'component-styles'; // Чтобы потом удалить
-    //     document.head.appendChild(link);
-    // },
-    // beforeUnmount() {
-    //     // Удаляем стили при уничтожении компонента
-    //     const link = document.getElementById('component-styles');
-    //     if (link) link.remove();
-    // },
+    created () {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/src/assets/TextModels.css';
+        link.id = 'component-styles'; // Чтобы потом удалить
+        document.head.appendChild(link);
+    },
+    beforeUnmount() {
+        // Удаляем стили при уничтожении компонента
+        const link = document.getElementById('component-styles');
+        if (link) link.remove();
+    },
     mounted () {
         const summaryInput = document.getElementById('summary');
         const errorSymbols = document.getElementById('error_sybols');
@@ -275,7 +275,7 @@ export default {
     </section>
 </template>
 
-<style scoped src="../../../assets/TextModels.css">
+<style scoped>
     section {
         padding: 0;
     }
