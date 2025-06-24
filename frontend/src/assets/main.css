@@ -909,6 +909,12 @@ section.black {
     width: 100%;
 }
 
+.cardButton.disabled {
+    background-color: #afafaf !important;
+    text-decoration: none;
+    cursor: not-allowed !important;
+}
+
 .cardButton:hover {
     text-decoration: none;
     background: #B1FEFA;

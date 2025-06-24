@@ -36,6 +36,11 @@ export default {
       data: null,
     };
   },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
+    },
   async mounted() {
     await axios.get(config.backend + "subscription").then((response) => {
       this.subscriptions = response.data;
@@ -618,9 +623,9 @@ export default {
           <a
             class="cardButton mt_20"
             :href="'/shop?plan=' + subscription.id"
-            data-tokens1="0"
-            data-tokens2="300"
-            >КУПИТЬ</a
+            data-tokens1="0" :class="subscription.name === user.sub_name ? 'disabled' : ''"
+            data-tokens2="300" @click="subscription.name === user.sub_name ? $event.preventDefault() : ''"
+            >{{ subscription.name === user.sub_name ? 'Куплено' : 'Купить' }}</a
           >
         </div>
       </div>
