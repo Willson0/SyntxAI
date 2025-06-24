@@ -115,6 +115,6 @@ export default {
     <NavigationComponent />
 </template>
 
-<style scoped>
+<style src="../assets/main.css" scoped>
 
 </style>

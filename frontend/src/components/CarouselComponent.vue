@@ -192,5 +192,5 @@ export default {
     </div>
 </template>
 
-<style scoped>
+<style src="../assets/main.css" scoped>
 </style>

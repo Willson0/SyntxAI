@@ -262,7 +262,7 @@ export default {
 
 </template>
 
-<style scoped>
+<style src="../assets/main.css" scoped>
     .arrow-container {
         display: none !important;
     }

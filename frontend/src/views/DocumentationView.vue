@@ -189,6 +189,6 @@ export default {
 
 </template>
 
-<style scoped>
+<style src="../assets/main.css" scoped>
 
 </style>

@@ -80,6 +80,6 @@ export default {
     </header>
 </template>
 
-<style scoped>
+<style src="../assets/main.css" scoped>
 
 </style>
