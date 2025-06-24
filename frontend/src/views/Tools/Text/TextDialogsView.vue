@@ -14,7 +14,7 @@ export default {
     created () {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = '/src/assets/TextModels.css';
+        link.href = new URL('/src/assets/TextModels.css', import.meta.url).href;
         link.id = 'component-styles'; // Чтобы потом удалить
         document.head.appendChild(link);
     },
