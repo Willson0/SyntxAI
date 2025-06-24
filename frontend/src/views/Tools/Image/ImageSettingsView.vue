@@ -42,18 +42,18 @@ export default {
             ]
         }
     },
-    created () {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '/src/assets/Image.css';
-        link.id = 'component-styles'; // Чтобы потом удалить
-        document.head.appendChild(link);
-    },
-    beforeUnmount() {
-        // Удаляем стили при уничтожении компонента
-        const link = document.getElementById('component-styles');
-        if (link) link.remove();
-    },
+    // created () {
+    //     const link = document.createElement('link');
+    //     link.rel = 'stylesheet';
+    //     link.href = '/src/assets/Image.css';
+    //     link.id = 'component-styles'; // Чтобы потом удалить
+    //     document.head.appendChild(link);
+    // },
+    // beforeUnmount() {
+    //     // Удаляем стили при уничтожении компонента
+    //     const link = document.getElementById('component-styles');
+    //     if (link) link.remove();
+    // },
     mounted () {
         document.body.style.fontFamily = "'Montserrat', sans-serif";
         document.body.style.padding = "0"
@@ -710,5 +710,5 @@ export default {
     </section>
 </template>
 
-<style scoped>
+<style src="../../../assets/Image.css" scoped>
 </style>

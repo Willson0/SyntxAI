@@ -11,18 +11,18 @@ export default {
             config: config,
         }
     },
-    created () {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '/src/assets/TextModels.css';
-        link.id = 'component-styles'; // Чтобы потом удалить
-        document.head.appendChild(link);
-    },
-    beforeUnmount() {
-        // Удаляем стили при уничтожении компонента
-        const link = document.getElementById('component-styles');
-        if (link) link.remove();
-    },
+    // created () {
+    //     const link = document.createElement('link');
+    //     link.rel = 'stylesheet';
+    //     link.href = '/src/assets/TextModels.css';
+    //     link.id = 'component-styles'; // Чтобы потом удалить
+    //     document.head.appendChild(link);
+    // },
+    // beforeUnmount() {
+    //     // Удаляем стили при уничтожении компонента
+    //     const link = document.getElementById('component-styles');
+    //     if (link) link.remove();
+    // },
     mounted () {
 
     },
@@ -112,6 +112,6 @@ export default {
     </section>
 </template>
 
-<style scoped>
+<style src="../../../assets/TextModels.css" scoped>
 
 </style>

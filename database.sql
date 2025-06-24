@@ -20,7 +20,7 @@ CREATE TABLE users (
     sub_name VARCHAR (100),
     notify_tokens INT (11),
     notify_refs INT (11),
-    notify_refs_buy INT (11),
+    notify_refs_buys INT (11),
     notify_about_updates INT (11),
     earning INT,
     created_at VARCHAR (32)
@@ -72,5 +72,7 @@ CREATE TABLE payments (
     payment_date VARCHAR(100) NOT NULL,
     type VARCHAR(50) NOT NULL,
     sub_name VARCHAR (100),
-    yookassa_id VARCHAR (100)
+    yookassa_id VARCHAR (100),
+    tokens INT,
+    `period` INT,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

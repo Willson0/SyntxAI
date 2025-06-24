@@ -34,6 +34,7 @@ class TokenController extends Controller
             "payment_date" => Carbon::now(),
             "type" => "sub",
             "sub_name" => $tariff->name,
+            "tokens" => $tariff->ai_tokens,
         ]);
 
         $response = $client->createPayment(

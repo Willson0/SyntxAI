@@ -33,6 +33,8 @@ class PaymentController extends Controller
             "payment_date" => Carbon::now(),
             "type" => "sub",
             "sub_name" => $sub->name,
+            "tokens" => $request["tokens"],
+            "period" => $request["period"],
         ]);
 
         $response = $client->createPayment(
@@ -63,10 +65,24 @@ class PaymentController extends Controller
             $user = User::find($payment->user_id);
             $sub = Sub::where("type", $payment->type)->where("name", $payment->sub_name)->first();
 
-            $user->ai_tokens += $sub->ai_tokens;
-            if ($sub->type === "sub") $user->sub_name = $sub->name;
+            $user->ai_tokens += $payment->tokens;
+            if ($sub->type === "sub") {
+                $user->sub_name = $sub->name;
+                $user->date_sub = Carbon::now()->addMonths($payment->period);
+            }
 
             $user->save();
+
+            if ($user->referer_id !== null) {
+                $referer = User::find($user->referer_id);
+
+                $percent = 0.15;
+                if (Sub::where("type", "sub")->where("name", $referer->sub_name)->first()->is_boost) $percent = 0.25;
+
+                if ($referer->earning) $referer->earning = 0;
+                $referer->earning += $payment->payment_sum * $percent;
+                $referer->save();
+            }
         }
         else if ($request->event === "payment.canceled") $payment->delete();
 

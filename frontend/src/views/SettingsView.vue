@@ -45,10 +45,10 @@ export default {
         async sendData() {
             await axios.post(config.backend + "auth/settings", {
                 initData: window.Telegram.WebApp.initData,
-                notify_tokens: this.user.notify_tokens,
-                notify_refs: this.user.notify_refs,
-                notify_refs_buys: this.user.notify_refs_buys,
-                notify_about_updates: this.user.notify_about_updates,
+                notify_tokens: this.user.notify_tokens ?? 1,
+                notify_refs: this.user.notify_refs ?? 1,
+                notify_refs_buys: this.user.notify_refs_buys ?? 1,
+                notify_about_updates: this.user.notify_about_updates ?? 1,
             }).then((response) => {
                 this.$store.dispatch("updateUser", response.data);
             }).catch((error) => {
@@ -73,7 +73,6 @@ export default {
             <span class="switch-label">Получать уведомления об обновлениях</span>
             <label class="switch">
                 <input type="hidden" name="notifications" value="0">
-                {{user.notify_about_updates}}
                 <input @input="user.notify_about_updates = !Boolean(user.notify_about_updates); sendData()" :checked="user.notify_about_updates" type="checkbox" id="notifications" name="notifications">
                 <span class="slider"></span>
             </label>
