@@ -73,7 +73,7 @@ class PaymentController extends Controller
 
             $user->save();
 
-            if ($user->referer_id !== null) {
+            if ($user->referer_id) {
                 $referer = User::find($user->referer_id);
 
                 $percent = 0.15;

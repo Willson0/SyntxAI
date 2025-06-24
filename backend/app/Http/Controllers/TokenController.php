@@ -32,7 +32,7 @@ class TokenController extends Controller
             "user_id" => $user->id,
             "payment_sum" => $tariff->price,
             "payment_date" => Carbon::now(),
-            "type" => "sub",
+            "type" => "token",
             "sub_name" => $tariff->name,
             "tokens" => $tariff->ai_tokens,
         ]);
